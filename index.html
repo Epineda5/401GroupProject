@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Spot — gym equipment waitlist</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="app">
+  <header class="bar">
+    <button id="back" hidden aria-label="Go back">Back</button>
+    <span class="brand">Spot</span>
+    <button id="checkin" aria-pressed="true" title="Prototype control">Checked in</button>
+    <button id="speed" aria-pressed="false" title="Prototype control: speeds up timers">30x time</button>
+  </header>
+  <main id="screen"></main>
+</div>
+<div class="toast" id="toast" role="status" hidden></div>
+<script src="script.js"></script>
+</body>
+</html>
