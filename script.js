@@ -1,3 +1,8 @@
+const SUPABASE_URL = 'https://nfdrezutavvxhmblsqdk.supabase.co';
+
+const SUPABASE_KEY = 'sb_publishable_FQmEnU0iXInf1Q8lvmMunw_o5UacvKM';
+
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const MAXLISTS=3,AVG=720;
 const E=[
 {id:1,name:'Bench press',g:'Chest',status:'inuse',rem:300,queue:['Jordan']},
