@@ -1,13 +1,10 @@
 const SUPABASE_URL = 'https://nfdrezutavvxhmblsqdk.supabase.co';
-
 const SUPABASE_KEY = 'sb_publishable_FQmEnU0iXInf1Q8lvmMunw_o5UacvKM';
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
 const MAXLISTS=3,AVG=720,CLAIM=90;
-
 let E=[],RAW={eq:[],wl:[],se:[]},busy=false;
 const GROUPS=['Chest','Back','Legs','Shoulders','Arms','Cardio'];
-const S={screen:'login',stack:[],me:null,checked:true,speed:1,warp:0,group:null,q:'',sel:null,claim:null,mins:12,msg:''};
+const S={screen:'login',stack:[],me:null,checked:true,speed:1,warp:0,group:null,q:'',sel:null,claim:null,mins:12,msg:'',mode:'login',ok:false,email:'',name:''};
 try{S.warp=+localStorage.getItem('spotWarp')||0}catch(x){}
 const vnow=()=>Date.now()+S.warp,iso=t=>new Date(t).toISOString();
 const $=s=>document.querySelector(s),app=$('#screen');
@@ -29,8 +26,8 @@ const using=()=>E.find(e=>e.status==='inuse'&&e.by==='You');
 const busyMsg=()=>'You are already using '+using().name+'. Finish that session before starting another.';
 function banner(){const u=using();return u&&S.screen!=='login'?`<div class="card now"><b>You are using ${u.name}</b><span class="sub"> · ${fmt(u.rem)} left</span><br><button class="link" data-a="finish" data-id="${u.id}">Finish session</button></div>`:''}
 const V={
-login:()=>`<h1>Skip the guessing.<br>Know the wait.</h1><p>Log in to see which equipment is free and how long the line is.</p>
-<form id="lf" class="card"><label for="em">Email</label><input id="em" type="email" autocomplete="email" value="chris@example.com"><label for="pw">Password</label><input id="pw" type="password" autocomplete="current-password"><p class="hint">Prototype: use password gym123</p>${S.msg?`<p class="err" role="alert">${S.msg}</p>`:''}<button class="btn" type="submit">Log in</button></form>`,
+login:()=>{const su=S.mode==='signup';return`<h1>Skip the guessing.<br>Know the wait.</h1><p>${su?'Create an account to join waitlists and track your sessions.':'Log in to see which equipment is free and how long the line is.'}</p>
+<form id="lf" class="card"><h2>${su?'Create account':'Log in'}</h2><label for="em">Email</label><input id="em" type="email" autocomplete="email" value="${(S.email||'').replace(/"/g,'&quot;')}" required><label for="pw">Password</label><input id="pw" type="password" autocomplete="${su?'new-password':'current-password'}" required>${su?'<label for="pw2">Confirm password</label><input id="pw2" type="password" autocomplete="new-password" required>':''}${S.msg?`<p class="${S.ok?'hint':'err'}" role="alert">${S.msg}</p>`:''}<button class="btn" type="submit">${su?'Create account':'Log in'}</button><p style="margin:14px 0 0">${su?'Already have an account?':'New here?'} <button type="button" class="link" data-a="mode">${su?'Log in':'Create an account'}</button></p></form>`},
 find:()=>`<h2>What are you training?</h2><form id="sf" class="card"><label for="q">Search equipment</label><input id="q" type="search" placeholder="Bench press, treadmill…"><button class="btn" type="submit">Search</button></form><button class="btn alt" data-a="groups">Browse by muscle group</button>`,
 groups:()=>`<h2>Pick a muscle group</h2><div class="chips">${GROUPS.map(g=>`<button class="chip" data-a="group" data-g="${g}" aria-pressed="false">${g}</button>`).join('')}</div>`,
 map:()=>{const l=E.filter(e=>(!S.group||e.g===S.group)&&(!S.q||e.name.toLowerCase().includes(S.q)));
@@ -54,7 +51,7 @@ function banner(){const u=using();return u&&S.screen!=='login'?`<div class="card
 
 function derive(){const t=vnow();
  E=RAW.eq.map(q=>{const rows=RAW.wl.filter(w=>w.equipment_id===q.equipment_id).sort((a,b)=>a.position-b.position);
-  const s=RAW.se.find(x=>x.equipment_id===q.equipment_id);
+  const s=RAW.se.find(x=>x.equipment_id===q.equipment_id&&(!x.end_time||Date.parse(x.end_time)>t));
   const e={id:q.equipment_id,name:q.name,g:q.muscle_group,rows,sess:s,queue:rows.map(w=>w.user_id===S.me?'You':'Other')};
   if(q.status==='unavailable')e.status='unavailable';
   else if(s){e.status='inuse';e.rem=s.duration_minutes*60-(t-Date.parse(s.start_time))/1000;e.by=s.user_id===S.me?'You':null}
@@ -62,7 +59,7 @@ function derive(){const t=vnow();
   else e.status='available';
   return e})}
 async function load(){
- const [a,b,c]=await Promise.all([db.from('equipment').select('*').order('equipment_id'),db.from('waitlist').select('*').order('position'),db.from('equipment_session').select('*').is('end_time',null)]);
+ const [a,b,c]=await Promise.all([db.from('equipment').select('*').order('equipment_id'),db.from('waitlist').select('*').order('position'),db.from('equipment_session').select('*')]);
  const err=a.error||b.error||c.error;if(err){toast('Database error: '+err.message);return false}
  RAW={eq:a.data,wl:b.data,se:c.data};return true}
 async function compact(eid){
@@ -86,20 +83,28 @@ function view(){
  if(turn&&S.screen!=='claim'&&S.screen!=='login'){S.claim=turn.id;S.stack=[];S.screen='claim';toast(turn.name+' is ready. Claim it now.')}
  else if(!turn&&S.screen==='claim'){S.claim=null;S.screen='map';S.stack=['find'];S.msg=''}
  if(!['find','groups','login'].includes(S.screen)){const y=window.scrollY;render();window.scrollTo(0,y)}}
-function render(){app.innerHTML=banner()+V[S.screen]();$('#back').hidden=!S.stack.length||S.screen==='claim';$('#checkin').hidden=$('#speed').hidden=S.screen==='login'}
+function render(){app.innerHTML=banner()+V[S.screen]();$('#back').hidden=!S.stack.length||S.screen==='claim';$('#checkin').hidden=$('#speed').hidden=S.screen==='login';
+ let w=$('#who');if(!w){w=document.createElement('span');w.id='who';w.style.cssText='display:flex;flex-direction:column;line-height:1.15;font-size:.75rem;text-align:right;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap';$('#checkin').before(w)}
+ w.hidden=S.screen==='login'||!S.name;w.innerHTML='<span>Checked in</span><b>'+S.name.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</b>'}
 
-async function login(email){
- let {data:u,error}=await db.from('users').select('user_id').eq('email',email).maybeSingle();
- if(error)return{error};
- if(!u){const r=await db.from('users').insert({email,password:'demo-login-not-used'}).select('user_id').single();if(r.error)return{error:r.error};u=r.data}
- await db.from('users').update({checked_in:true}).eq('user_id',u.user_id);
- return{id:u.user_id}}
+async function enter(id){
+ try{localStorage.setItem('spotUser',String(id))}catch(x){}
+ await db.from('users').update({checked_in:true}).eq('user_id',id);
+ const u=await db.from('users').select('email').eq('user_id',id).maybeSingle();S.name=u.data&&u.data.email?u.data.email.split('@')[0]:'';
+ S.me=id;S.checked=true;S.msg='';S.email='';await load();derive();S.screen='find';S.stack=[];render()}
 document.addEventListener('keydown',ev=>{if(ev.key==='Escape')$('#modal').hidden=true});
 document.addEventListener('submit',async ev=>{ev.preventDefault();
- if(ev.target.id==='lf'){const em=$('#em').value.trim();
-  if(!em||$('#pw').value!=='gym123'){S.msg='We could not log you in. Check your email and password, then try again.';return render()}
-  const r=await login(em);if(r.error){S.msg='Could not reach the database: '+r.error.message;return render()}
-  S.me=r.id;S.checked=true;S.msg='';await load();derive();S.screen='find';S.stack=[];render()}
+ if(ev.target.id==='lf'){const em=$('#em').value.trim(),pw=$('#pw').value,su=S.mode==='signup';S.email=em;S.ok=false;
+  if(su&&pw!==$('#pw2').value){S.msg='Passwords do not match.';return render()}
+  let id;
+  if(su){const r=await db.from('users').insert({email:em,password:pw}).select('user_id').single();
+   if(r.error){S.msg=r.error.code==='23505'?'That email already has an account.':r.error.message;return render()}
+   id=r.data.user_id}
+  else{const r=await db.from('users').select('user_id').eq('email',em).eq('password',pw).maybeSingle();
+   if(r.error){S.msg=r.error.message;return render()}
+   if(!r.data){S.msg='We could not log you in. Check your email and password, then try again.';return render()}
+   id=r.data.user_id}
+  await enter(id)}
  if(ev.target.id==='sf'){S.q=$('#q').value.trim().toLowerCase();S.group=null;go('map')}});
 const myRow=e=>e.rows.find(w=>w.user_id===S.me);
 document.addEventListener('click',async ev=>{const b=ev.target.closest('button');if(!b)return;
@@ -110,9 +115,11 @@ document.addEventListener('click',async ev=>{const b=ev.target.closest('button')
   for(const x of E){const r=myRow(x);if(r){await db.from('waitlist').delete().eq('waitlist_id',r.waitlist_id);await compact(x.id)}}
   const u=using();if(u)await db.from('equipment_session').update({end_time:iso(vnow())}).eq('session_id',u.sess.session_id);
   await db.from('users').update({checked_in:false}).eq('user_id',S.me);
-  S.me=null;S.claim=null;S.screen='login';S.stack=[];S.group=null;S.q='';E=[];toast('You have been checked out.');render();return}
+  try{localStorage.removeItem('spotUser')}catch(x){}
+  S.me=null;S.name='';S.claim=null;S.screen='login';S.stack=[];S.group=null;S.q='';E=[];toast('You have been checked out.');render();return}
  if(b.id==='speed'){S.speed=S.speed===1?30:1;b.setAttribute('aria-pressed',S.speed>1);return}
  const a=b.dataset.a,e=b.dataset.id&&get(+b.dataset.id);if(!a)return;
+ if(a==='mode'){S.mode=S.mode==='login'?'signup':'login';S.msg='';S.ok=false;return render()}
  if(a==='groups')go('groups');
  if(a==='group'){S.group=b.dataset.g;S.q='';go('map')}
  if(a==='open'){S.sel=e.id;go('detail')}
@@ -147,3 +154,9 @@ document.addEventListener('click',async ev=>{const b=ev.target.closest('button')
 setInterval(()=>{if(!S.me)return;S.warp+=(S.speed-1)*1000;try{localStorage.setItem('spotWarp',S.warp)}catch(x){}derive();view()},1000);
 setInterval(()=>{if(S.me)sync()},4000);
 render();
+(async()=>{let saved=null;try{saved=localStorage.getItem('spotUser')}catch(x){}
+ if(!saved)return;
+ const {data,error}=await db.from('users').select('user_id').eq('user_id',saved).maybeSingle();
+ if(error)console.error('Could not restore login:',error.message);
+ else if(data)enter(data.user_id);
+ else try{localStorage.removeItem('spotUser')}catch(x){}})();
