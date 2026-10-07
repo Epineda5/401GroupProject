@@ -13,11 +13,12 @@
   <header class="bar">
     <button id="back" hidden aria-label="Go back">Back</button>
     <span class="brand">Spot</span>
-    <button id="checkin" aria-pressed="true" title="Prototype control">Checked in</button>
+    <button id="checkin">Check out</button>
     <button id="speed" aria-pressed="false" title="Prototype control: speeds up timers">30x time</button>
   </header>
   <main id="screen"></main>
 </div>
+<div class="modal" id="modal" role="alertdialog" aria-modal="true" aria-labelledby="mt" hidden><div class="box"><p id="mt">Are you sure you want to check out? You'll lose your current session and waitlists</p><button class="btn danger" id="co-yes">Check out</button><button class="btn alt" id="co-no">Stay checked in</button></div></div>
 <div class="toast" id="toast" role="status" hidden></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="script.js"></script>
