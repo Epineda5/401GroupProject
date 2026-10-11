@@ -1,3 +1,3 @@
 # 401GroupProject
-
+This is Spot, our gym waitlist app. Have you ever had to interrupt someone at the gym when they have their headphones in, trying to get their attention to see how much longer they had on the machine? Spot aims to eliminate that akward instance and help keep your workout focused on working out. Waitlists are displayed for each machine in the gym, and you can sign up for any machine you want for a set amount of time. It will display to everyone else in the gym that this machine is taken and for how long. Wait times too long? Spot will suggest alternate machines that hit the same muscle groups, keeping unintended downtime to a minimum.
 ![alt text](<ERD.png>)
