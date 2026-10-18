@@ -83,7 +83,14 @@ function view(){
  if(turn&&S.screen!=='claim'&&S.screen!=='login'){S.claim=turn.id;S.stack=[];S.screen='claim';toast(turn.name+' is ready. Claim it now.')}
  else if(!turn&&S.screen==='claim'){S.claim=null;S.screen='map';S.stack=['find'];S.msg=''}
  if(!['find','groups','login'].includes(S.screen)){const y=window.scrollY;render();window.scrollTo(0,y)}}
-function render(){app.innerHTML=banner()+V[S.screen]();$('#back').hidden=!S.stack.length||S.screen==='claim';$('#checkin').hidden=$('#speed').hidden=S.screen==='login';
+const fkey=el=>el?[el.id,el.dataset.a,el.dataset.id,el.dataset.m,el.dataset.g].join('|'):'';
+function render(){
+ const f=document.activeElement,inApp=f&&app.contains(f),k=inApp?fkey(f):'';
+ const twins=()=>[...app.querySelectorAll(f.tagName)].filter(x=>fkey(x)===k);
+ const n=inApp?twins().indexOf(f):-1,pos=inApp?[...app.querySelectorAll(f.tagName)].indexOf(f):-1;
+ app.innerHTML=banner()+V[S.screen]();
+ if(inApp&&k!=='||||'){const m=twins();const t=m[n]||m[0]||[...app.querySelectorAll(f.tagName)][pos];if(t)t.focus({preventScroll:true})}
+ $('#back').hidden=!S.stack.length||S.screen==='claim';$('#checkin').hidden=$('#speed').hidden=S.screen==='login';
  let w=$('#who');if(!w){w=document.createElement('span');w.id='who';w.style.cssText='display:flex;flex-direction:column;line-height:1.15;font-size:.75rem;text-align:right;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap';$('#checkin').before(w)}
  w.hidden=S.screen==='login'||!S.name;w.innerHTML='<span>Checked in</span><b>'+S.name.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</b>'}
 
