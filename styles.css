@@ -65,3 +65,37 @@ html body main{width:100%;max-width:var(--page-max);margin-inline:auto}
 html body .bar{padding-inline:max(var(--gut,16px),calc((100% - var(--page-max))/2 + var(--gut,16px)))}
 html body .bar button{white-space:nowrap}
 @media (max-width:480px){#who span{display:none}#who{max-width:90px}}
+
+/* Light and dark mode toggle */
+#theme-toggle {
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+/* Make links readable in manually selected dark mode */
+:root[data-theme="dark"] .link {
+    color: var(--accent);
+}
+
+/* Keep links readable when light mode is selected */
+:root[data-theme="light"] .link {
+    color: var(--brand);
+}
+
+/* Smooth theme transitions */
+body,
+.card,
+.tile,
+.chip,
+input,
+.stat,
+.modal .box {
+    transition: background-color 0.2s ease, color 0.2s ease,
+                border-color 0.2s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body, .card, .tile, .chip, input, .stat, .modal .box {
+        transition: none;
+    }
+}
