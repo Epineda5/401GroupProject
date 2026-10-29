@@ -8,6 +8,36 @@ const S={screen:'login',stack:[],me:null,checked:true,speed:1,warp:0,group:null,
 try{S.warp=+localStorage.getItem('spotWarp')||0}catch(x){}
 const vnow=()=>Date.now()+S.warp,iso=t=>new Date(t).toISOString();
 const $=s=>document.querySelector(s),app=$('#screen');
+// Light and dark mode
+let currentTheme = "light";
+
+try {
+    currentTheme = localStorage.getItem("spotTheme") ||
+        (window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light");
+} catch (error) {
+    currentTheme = "light";
+}
+
+function applyTheme() {
+    document.documentElement.setAttribute("data-theme", currentTheme);
+
+    const themeButton = document.getElementById("theme-toggle");
+
+    if (themeButton) {
+        themeButton.textContent = currentTheme === "dark" ? "Light" : "Dark";
+
+        themeButton.setAttribute(
+            "aria-label",
+            currentTheme === "dark"
+                ? "Switch to light mode"
+                : "Switch to dark mode"
+        );
+    }
+}
+
+applyTheme();
 const fmt=s=>{s=Math.max(0,Math.ceil(s));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')};
 const get=id=>E.find(e=>e.id===id);
 const mine=()=>E.filter(e=>e.queue.includes('You'));
