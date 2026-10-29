@@ -145,6 +145,20 @@ document.addEventListener('submit',async ev=>{ev.preventDefault();
  if(ev.target.id==='sf'){S.q=$('#q').value.trim().toLowerCase();S.group=null;go('map')}});
 const myRow=e=>e.rows.find(w=>w.user_id===S.me);
 document.addEventListener('click',async ev=>{const b=ev.target.closest('button');if(!b)return;
+                                             // Toggle between light and dark mode
+if (b.id === "theme-toggle") {
+    currentTheme = currentTheme === "light" ? "dark" : "light";
+
+    applyTheme();
+
+    try {
+        localStorage.setItem("spotTheme", currentTheme);
+    } catch (error) {
+        console.log("Theme preference could not be saved.");
+    }
+
+    return;
+}
  if(b.id==='back'){S.screen=S.stack.pop();S.msg='';return render()}
  if(b.id==='checkin'){$('#modal').hidden=false;$('#co-no').focus();return}
  if(b.id==='co-no'){$('#modal').hidden=true;return}
