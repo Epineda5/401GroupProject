@@ -14,12 +14,31 @@
     <button id="back" hidden aria-label="Go back">Back</button>
     <span class="brand">Spot</span>
 
-    <button id="theme-toggle" type="button" aria-label="Switch to dark mode">
-      Dark
-    </button>
+    <div class="menu-wrap">
+      <button id="menu-toggle" type="button"
+              aria-expanded="false" aria-controls="spot-menu">
+        ☰ Menu
+      </button>
 
-    <button id="checkin">Check out</button>
-    <button id="speed" aria-pressed="false" title="Prototype control: speeds up timers">30x time</button>
+      <div id="spot-menu" class="spot-menu" hidden>
+        <div class="menu-user">
+          <span id="menu-avatar" class="menu-avatar">?</span>
+          <strong id="menu-name">My Account</strong>
+        </div>
+
+        <button id="profile-open" type="button">My Profile</button>
+        <button id="theme-toggle" type="button">Dark Mode</button>
+        <button id="speed" type="button" aria-pressed="false">
+          30x Time
+        </button>
+
+        <hr>
+
+        <button id="checkin" class="menu-danger" type="button">
+          Check Out
+        </button>
+      </div>
+    </div>
   </header>
   <main id="screen"></main>
 </div>
