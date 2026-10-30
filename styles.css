@@ -168,3 +168,44 @@ input,
 .bar .spot-menu .menu-danger:hover {
     background: color-mix(in srgb, var(--err) 10%, transparent);
 }
+
+/* Equipment search autocomplete */
+
+.search-wrap {
+    position: relative;
+}
+
+.suggestions {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    z-index: 10;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, .12);
+    overflow: hidden;
+}
+
+.suggestion {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    border: 0;
+    border-bottom: 1px solid var(--line);
+    background: var(--card);
+    color: var(--ink);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.suggestion:last-child {
+    border-bottom: 0;
+}
+
+.suggestion:hover,
+.suggestion.active {
+    background: var(--bg);
+}
