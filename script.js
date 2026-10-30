@@ -59,7 +59,39 @@ function banner(){const u=using();return u&&S.screen!=='login'?`<div class="card
 const V={
 login:()=>{const su=S.mode==='signup';return`<h1>Skip the guessing.<br>Know the wait.</h1><p>${su?'Create an account to join waitlists and track your sessions.':'Log in to see which equipment is free and how long the line is.'}</p>
 <form id="lf" class="card"><h2>${su?'Create account':'Log in'}</h2><label for="em">Email</label><input id="em" type="email" autocomplete="email" value="${(S.email||'').replace(/"/g,'&quot;')}" required><label for="pw">Password</label><input id="pw" type="password" autocomplete="${su?'new-password':'current-password'}" required>${su?'<label for="pw2">Confirm password</label><input id="pw2" type="password" autocomplete="new-password" required>':''}${S.msg?`<p class="${S.ok?'hint':'err'}" role="alert">${S.msg}</p>`:''}<button class="btn" type="submit">${su?'Create account':'Log in'}</button><p style="margin:14px 0 0">${su?'Already have an account?':'New here?'} <button type="button" class="link" data-a="mode">${su?'Log in':'Create an account'}</button></p></form>`},
-find:()=>`<h2>What are you training?</h2><form id="sf" class="card"><label for="q">Search equipment</label><input id="q" type="search" placeholder="Bench press, treadmill…"><button class="btn" type="submit">Search</button></form><button class="btn alt" data-a="groups">Browse by muscle group</button>`,
+find:()=>`
+    <h2>What are you training?</h2>
+
+    <form id="sf" class="card">
+        <label for="q">Search equipment</label>
+
+        <div class="search-wrap">
+            <input
+                id="q"
+                type="search"
+                placeholder="Bench press, treadmill…"
+                autocomplete="off"
+                role="combobox"
+                aria-autocomplete="list"
+                aria-controls="equipment-suggestions"
+                aria-expanded="false"
+            >
+
+            <div
+                id="equipment-suggestions"
+                class="suggestions"
+                role="listbox"
+                hidden>
+            </div>
+        </div>
+
+        <button class="btn" type="submit">Search</button>
+    </form>
+
+    <button class="btn alt" data-a="groups">
+        Browse by muscle group
+    </button>
+`,
 groups:()=>`<h2>Pick a muscle group</h2><div class="chips">${GROUPS.map(g=>`<button class="chip" data-a="group" data-g="${g}" aria-pressed="false">${g}</button>`).join('')}</div>`,
 map:()=>{const l=E.filter(e=>(!S.group||e.g===S.group)&&(!S.q||e.name.toLowerCase().includes(S.q)));
  const alt=S.group?'':'';return`<h2>${S.group||(S.q?'Results for “'+S.q+'”':'All equipment')}</h2><p class="hint">Tap a machine to see its wait. You are on ${mine().length} of ${MAXLISTS} waitlists.</p>
@@ -157,7 +189,131 @@ document.addEventListener('submit',async ev=>{ev.preventDefault();
    id=r.data.user_id}
   await enter(id)}
  if(ev.target.id==='sf'){S.q=$('#q').value.trim().toLowerCase();S.group=null;go('map')}});
-const myRow=e=>e.rows.find(w=>w.user_id===S.me);
+// ---- Equipment search autocomplete ----
+
+let suggestionIndex = -1;
+
+function getEquipmentSuggestions(query) {
+    const q = query.trim().toLowerCase();
+
+    if (!q) return [];
+
+    const names = [...new Set(E.map(e => e.name).filter(Boolean))];
+
+    return names
+        .filter(name => name.toLowerCase().includes(q))
+        .sort((a, b) => {
+            const aName = a.toLowerCase();
+            const bName = b.toLowerCase();
+
+            // Names starting with the search appear first
+            const aStarts = aName.startsWith(q);
+            const bStarts = bName.startsWith(q);
+
+            if (aStarts !== bStarts) {
+                return aStarts ? -1 : 1;
+            }
+
+            return a.localeCompare(b);
+        })
+        .slice(0, 5);
+}
+
+function updateEquipmentSuggestions() {
+    const input = $('#q');
+    const box = $('#equipment-suggestions');
+
+    if (!input || !box) return;
+
+    const matches = getEquipmentSuggestions(input.value);
+    suggestionIndex = -1;
+
+    box.replaceChildren();
+
+    matches.forEach((name, index) => {
+        const option = document.createElement('button');
+
+        option.type = 'button';
+        option.className = 'suggestion';
+        option.id = `equipment-suggestion-${index}`;
+        option.setAttribute('role', 'option');
+        option.setAttribute('aria-selected', 'false');
+        option.textContent = name;
+
+        option.addEventListener('click', () => {
+            input.value = name;
+            box.hidden = true;
+            input.setAttribute('aria-expanded', 'false');
+
+            S.q = name.toLowerCase();
+            S.group = null;
+
+            go('map');
+        });
+
+        box.appendChild(option);
+    });
+
+    box.hidden = matches.length === 0;
+    input.setAttribute('aria-expanded', String(matches.length > 0));
+    input.removeAttribute('aria-activedescendant');
+}
+
+document.addEventListener('input', ev => {
+    if (ev.target.id === 'q') {
+        updateEquipmentSuggestions();
+    }
+});
+
+document.addEventListener('keydown', ev => {
+    if (ev.target.id !== 'q') return;
+
+    const box = $('#equipment-suggestions');
+
+    if (!box || box.hidden) return;
+
+    const options = [...box.querySelectorAll('.suggestion')];
+
+    if (!options.length) return;
+
+    if (ev.key === 'ArrowDown') {
+        ev.preventDefault();
+        suggestionIndex = (suggestionIndex + 1) % options.length;
+    } else if (ev.key === 'ArrowUp') {
+        ev.preventDefault();
+        suggestionIndex =
+            (suggestionIndex - 1 + options.length) % options.length;
+    } else if (ev.key === 'Enter' && suggestionIndex >= 0) {
+        ev.preventDefault();
+        options[suggestionIndex].click();
+        return;
+    } else if (ev.key === 'Escape') {
+        box.hidden = true;
+        ev.target.setAttribute('aria-expanded', 'false');
+        return;
+    } else {
+        return;
+    }
+
+    options.forEach((option, index) => {
+        const active = index === suggestionIndex;
+
+        option.classList.toggle('active', active);
+        option.setAttribute('aria-selected', String(active));
+
+        if (active) {
+            ev.target.setAttribute('aria-activedescendant', option.id);
+        }
+    });
+});
+
+document.addEventListener('click', ev => {
+    if (!ev.target.closest('.search-wrap')) {
+        const box = $('#equipment-suggestions');
+        if (box) box.hidden = true;
+    }
+});
+ const myRow=e=>e.rows.find(w=>w.user_id===S.me);
 document.addEventListener('click',async ev=>{const b=ev.target.closest('button');if(!b)return;
   if (b.id === 'menu-toggle') {
     const menu = $('#spot-menu');
