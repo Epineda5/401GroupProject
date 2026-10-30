@@ -26,7 +26,8 @@ function applyTheme() {
     const themeButton = document.getElementById("theme-toggle");
 
     if (themeButton) {
-        themeButton.textContent = currentTheme === "dark" ? "Light" : "Dark";
+        themeButton.textContent =
+            currentTheme === "dark" ? "Light Mode" : "Dark Mode";
 
         themeButton.setAttribute(
             "aria-label",
@@ -120,9 +121,19 @@ function render(){
  const n=inApp?twins().indexOf(f):-1,pos=inApp?[...app.querySelectorAll(f.tagName)].indexOf(f):-1;
  app.innerHTML=banner()+V[S.screen]();
  if(inApp&&k!=='||||'){const m=twins();const t=m[n]||m[0]||[...app.querySelectorAll(f.tagName)][pos];if(t)t.focus({preventScroll:true})}
- $('#back').hidden=!S.stack.length||S.screen==='claim';$('#checkin').hidden=$('#speed').hidden=S.screen==='login';
- let w=$('#who');if(!w){w=document.createElement('span');w.id='who';w.style.cssText='display:flex;flex-direction:column;line-height:1.15;font-size:.75rem;text-align:right;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap';$('#checkin').before(w)}
- w.hidden=S.screen==='login'||!S.name;w.innerHTML='<span>Checked in</span><b>'+S.name.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</b>'}
+ $('#back').hidden = !S.stack.length || S.screen === 'claim';
+
+$('#menu-toggle').hidden = S.screen === 'login';
+
+if (S.screen === 'login') {
+    $('#spot-menu').hidden = true;
+    $('#menu-toggle').setAttribute('aria-expanded', 'false');
+}
+
+$('#menu-name').textContent = S.name || 'My Account';
+$('#menu-avatar').textContent =
+    (S.name || '?').charAt(0).toUpperCase();
+}
 
 async function enter(id){
  try{localStorage.setItem('spotUser',String(id))}catch(x){}
@@ -148,6 +159,23 @@ document.addEventListener('submit',async ev=>{ev.preventDefault();
  if(ev.target.id==='sf'){S.q=$('#q').value.trim().toLowerCase();S.group=null;go('map')}});
 const myRow=e=>e.rows.find(w=>w.user_id===S.me);
 document.addEventListener('click',async ev=>{const b=ev.target.closest('button');if(!b)return;
+  if (b.id === 'menu-toggle') {
+    const menu = $('#spot-menu');
+    menu.hidden = !menu.hidden;
+
+    b.setAttribute('aria-expanded', String(!menu.hidden));
+    return;
+}
+
+if (b.closest('#spot-menu')) {
+    $('#spot-menu').hidden = true;
+    $('#menu-toggle').setAttribute('aria-expanded', 'false');
+}
+
+if (b.id === 'profile-open') {
+    toast('Profile settings are coming next.');
+    return;
+}
                                              // Toggle between light and dark mode
 if (b.id === "theme-toggle") {
     currentTheme = currentTheme === "light" ? "dark" : "light";
@@ -172,7 +200,12 @@ if (b.id === "theme-toggle") {
   await db.from('check_ins').update({checked_out_at:new Date().toISOString()}).eq('user_id',S.me).is('checked_out_at',null);
   try{localStorage.removeItem('spotUser')}catch(x){}
   S.me=null;S.name='';S.claim=null;S.screen='login';S.stack=[];S.group=null;S.q='';E=[];toast('You have been checked out.');render();return}
- if(b.id==='speed'){S.speed=S.speed===1?30:1;b.setAttribute('aria-pressed',S.speed>1);return}
+ if (b.id === 'speed') {
+    S.speed = S.speed === 1 ? 30 : 1;
+    b.setAttribute('aria-pressed', String(S.speed > 1));
+    b.textContent = S.speed > 1 ? '30x Time: On' : '30x Time: Off';
+    return;
+}
  const a=b.dataset.a,e=b.dataset.id&&get(+b.dataset.id);if(!a)return;
  if(a==='mode'){S.mode=S.mode==='login'?'signup':'login';S.msg='';S.ok=false;return render()}
  if(a==='groups')go('groups');
@@ -206,6 +239,12 @@ if (b.id === "theme-toggle") {
   if(error){S.msg=error.code==='23505'?'Someone else started on this machine first.':error.message;return render()}
   await db.from('waitlist').delete().eq('waitlist_id',r.waitlist_id);await compact(c.id);
   S.claim=null;S.sel=c.id;S.stack=['find','map'];S.screen='detail';S.msg='';toast('It is yours. Your session timer has started.');await sync();render()}});
+  document.addEventListener('click', ev => {
+    if (!ev.target.closest('.menu-wrap')) {
+        $('#spot-menu').hidden = true;
+        $('#menu-toggle').setAttribute('aria-expanded', 'false');
+    }
+});
 setInterval(()=>{if(!S.me)return;S.warp+=(S.speed-1)*1000;try{localStorage.setItem('spotWarp',S.warp)}catch(x){}derive();view()},1000);
 setInterval(()=>{if(S.me)sync()},4000);
 setInterval(()=>{if(S.me)db.rpc('heartbeat',{p_user:S.me})},20000);
