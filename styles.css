@@ -99,3 +99,72 @@ input,
         transition: none;
     }
 }
+
+/* Spot dropdown menu */
+.menu-wrap {
+    position: relative;
+}
+
+.spot-menu {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 12px);
+    width: min(290px, calc(100vw - 24px));
+    padding: 12px;
+    background: var(--card);
+    color: var(--ink);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: 0 12px 30px rgba(0,0,0,.18);
+    z-index: 30;
+}
+
+.bar .spot-menu button {
+    display: block;
+    width: 100%;
+    text-align: left;
+    color: var(--ink);
+    border: 0;
+    border-radius: 8px;
+    padding: 10px 12px;
+    white-space: normal;
+}
+
+.bar .spot-menu button:hover {
+    background: var(--bg);
+}
+
+.menu-user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 8px 14px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 8px;
+}
+
+.menu-avatar {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--brand);
+    color: var(--on-brand);
+    font-weight: 700;
+}
+
+.spot-menu hr {
+    border: 0;
+    border-top: 1px solid var(--line);
+    margin: 8px 0;
+}
+
+.bar .spot-menu .menu-danger {
+    color: var(--err);
+    font-weight: 700;
+}
+
+.bar .spot-menu .menu-danger:hover {
+    background: color-mix(in srgb, var(--err) 10%, transparent);
+}
