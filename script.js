@@ -1,211 +1,432 @@
-:root{--bg:#EDF0F2;--card:#fff;--ink:#16212C;--muted:#566472;--line:#D3DAE0;--brand:#1F3A5F;--on-brand:#fff;--accent:#F2C230;--ok:#1B7A4E;--use:#B4400C;--res:#5444A8;--off:#5F6873;--err:#B42318;--r:14px}
-@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0F161D;--card:#182129;--ink:#EAF0F5;--muted:#9AA8B5;--line:#2A3641;--brand:#3E6DAE;--ok:#4CC38A;--use:#F08A57;--res:#A99BF2;--off:#9AA3AD;--err:#F97066}}
-:root[data-theme=dark]{--bg:#0F161D;--card:#182129;--ink:#EAF0F5;--muted:#9AA8B5;--line:#2A3641;--brand:#3E6DAE;--ok:#4CC38A;--use:#F08A57;--res:#A99BF2;--off:#9AA3AD;--err:#F97066}
-*{box-sizing:border-box}
-html{scroll-padding-top:env(safe-area-inset-top,0px)}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Barlow,system-ui,sans-serif;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-h1,h2,h3{font-family:"Barlow Condensed",Barlow,sans-serif;line-height:1.1;margin:0 0 .4em;letter-spacing:.01em}
-h1{font-size:2.6rem;font-weight:700}h2{font-size:1.9rem;font-weight:700}h3{font-size:1.3rem;font-weight:600}
-p{margin:0 0 .8em;max-width:60ch}
-.app{max-width:480px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
-.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--brand);color:var(--on-brand);display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:4px solid var(--accent)}
-.bar .brand{font:700 1.35rem "Barlow Condensed",sans-serif;flex:1}
-.bar button{background:transparent;color:inherit;border:1px solid rgba(255,255,255,.55);border-radius:99px;padding:4px 12px;font:inherit;font-size:.85rem;cursor:pointer}
-.bar button[aria-pressed=true]{background:var(--accent);color:#16212C;border-color:var(--accent)}
-main{padding:20px 16px 40px;flex:1}
-.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-bottom:12px}
-label{display:block;font-weight:600;margin:12px 0 4px}
-input{width:100%;font:inherit;color:var(--ink);background:var(--card);border:2px solid var(--line);border-radius:10px;padding:11px 12px}
-button,input{min-height:44px}
-input:focus-visible,button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
-.btn{display:block;width:100%;background:var(--brand);color:var(--on-brand);border:0;border-radius:10px;padding:12px 16px;font:600 1.05rem Barlow,sans-serif;cursor:pointer;margin-top:12px}
-.btn.alt{background:transparent;color:var(--ink);border:2px solid var(--line)}
-.btn.danger{background:transparent;color:var(--err);border:2px solid var(--err)}
-.link{background:none;border:0;color:var(--brand);font:inherit;font-weight:600;text-decoration:underline;padding:0;cursor:pointer;min-height:0}
-@media (prefers-color-scheme:dark){.link{color:var(--accent)}}
-.err{color:var(--err);font-weight:600;margin-top:10px}
-.hint{color:var(--muted);font-size:.9rem}
-.chips{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
-.chip{background:var(--card);border:2px solid var(--line);border-radius:12px;padding:16px 10px;font:600 1.3rem "Barlow Condensed",sans-serif;color:var(--ink);cursor:pointer;text-align:left}
-.chip[aria-pressed=true]{border-color:var(--brand);background:var(--brand);color:var(--on-brand)}
-.floor{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px;border:2px dashed var(--line);border-radius:var(--r)}
-.tile{background:var(--card);border:2px solid var(--line);border-left-width:8px;border-radius:10px;padding:10px;text-align:left;color:var(--ink);font:inherit;cursor:pointer;display:flex;flex-direction:column;gap:4px}
-.tile b{font:600 1.15rem "Barlow Condensed",sans-serif}
-.s-available{border-left-color:var(--ok)}.s-inuse{border-left-color:var(--use)}.s-reserved{border-left-color:var(--res)}.s-unavailable{border-left-color:var(--off)}
-.pill{font-weight:700;font-size:.85rem}
-.pill.s-available{color:var(--ok)}.pill.s-inuse{color:var(--use)}.pill.s-reserved{color:var(--res)}.pill.s-unavailable{color:var(--off)}
-.pill::before{content:"";display:inline-block;width:.6em;height:.6em;border-radius:50%;background:currentColor;margin-right:.4em}
-.sub{font-size:.85rem;color:var(--muted)}
-.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
-.stat{border:1px solid var(--line);border-radius:10px;padding:10px}
-.stat b{display:block;font:700 2rem "Barlow Condensed",sans-serif}
-.big{font:700 5rem/1 "Barlow Condensed",sans-serif;text-align:center;margin:10px 0}
-.mins{display:flex;gap:8px;margin-top:8px}
-.mins .chip{flex:1;text-align:center;padding:10px}
-.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:10px;max-width:90%;z-index:9;font-weight:600}
-[hidden]{display:none!important}
-@media (prefers-reduced-motion:no-preference){.claim-card{animation:pop .4s ease-out}@keyframes pop{from{transform:scale(.96)}}}
+const SUPABASE_URL = 'https://nfdrezutavvxhmblsqdk.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_FQmEnU0iXInf1Q8lvmMunw_o5UacvKM';
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const MAXLISTS=3,AVG=720,CLAIM=90;
+let E=[],RAW={eq:[],wl:[],se:[]},busy=false;
+const GROUPS=['Chest','Back','Legs','Shoulders','Arms','Cardio'];
+const S={screen:'login',stack:[],me:null,checked:true,speed:1,warp:0,group:null,q:'',sel:null,claim:null,mins:12,msg:'',mode:'login',ok:false,email:'',name:''};
+try{S.warp=+localStorage.getItem('spotWarp')||0}catch(x){}
+const vnow=()=>Date.now()+S.warp,iso=t=>new Date(t).toISOString();
+const $=s=>document.querySelector(s),app=$('#screen');
+// Light and dark mode
+let currentTheme = "light";
 
-.now{border-left:8px solid var(--use)}
-
-.modal{position:fixed;inset:0;background:rgba(10,16,22,.6);display:flex;align-items:center;justify-content:center;padding:20px;z-index:20}
-.modal .box{background:var(--card);border-radius:var(--r);padding:20px;max-width:380px;width:100%}
-.modal .box p{font:600 1.25rem/1.3 "Barlow Condensed",sans-serif}
-
-@media (min-width: 900px) {
-  .app { max-width: 960px; }
-  .floor { grid-template-columns: repeat(3, 1fr); }
-  .chips { grid-template-columns: repeat(3, 1fr); }
-  main { padding: 28px 32px 48px; }
-}
-/* Full-width header bar, centered content */
-:root{--page-max:1200px}
-html body .app{max-width:none;width:100%;margin:0}
-html body main{width:100%;max-width:var(--page-max);margin-inline:auto}
-html body .bar{padding-inline:max(var(--gut,16px),calc((100% - var(--page-max))/2 + var(--gut,16px)))}
-html body .bar button{white-space:nowrap}
-@media (max-width:480px){#who span{display:none}#who{max-width:90px}}
-
-/* Light and dark mode toggle */
-#theme-toggle {
-    white-space: nowrap;
-    cursor: pointer;
+try {
+    currentTheme = localStorage.getItem("spotTheme") ||
+        (window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light");
+} catch (error) {
+    currentTheme = "light";
 }
 
-/* Make links readable in manually selected dark mode */
-:root[data-theme="dark"] .link {
-    color: var(--accent);
-}
+function applyTheme() {
+    document.documentElement.setAttribute("data-theme", currentTheme);
 
-/* Keep links readable when light mode is selected */
-:root[data-theme="light"] .link {
-    color: var(--brand);
-}
+    const themeButton = document.getElementById("theme-toggle");
 
-/* Smooth theme transitions */
-body,
-.card,
-.tile,
-.chip,
-input,
-.stat,
-.modal .box {
-    transition: background-color 0.2s ease, color 0.2s ease,
-                border-color 0.2s ease;
-}
+    if (themeButton) {
+        themeButton.textContent =
+            currentTheme === "dark" ? "Light Mode" : "Dark Mode";
 
-@media (prefers-reduced-motion: reduce) {
-    body, .card, .tile, .chip, input, .stat, .modal .box {
-        transition: none;
+        themeButton.setAttribute(
+            "aria-label",
+            currentTheme === "dark"
+                ? "Switch to light mode"
+                : "Switch to dark mode"
+        );
     }
 }
 
-/* Spot dropdown menu */
-.menu-wrap {
-    position: relative;
+applyTheme();
+const fmt=s=>{s=Math.max(0,Math.ceil(s));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')};
+const get=id=>E.find(e=>e.id===id);
+const mine=()=>E.filter(e=>e.queue.includes('You'));
+const wait=e=>Math.ceil(((e.status==='inuse'?e.rem:e.status==='reserved'?e.claimLeft:0)+e.queue.length*AVG)/60);
+const LABEL={available:'Available',inuse:'In use',reserved:'Reserved',unavailable:'Unavailable'};
+function toast(t){const el=$('#toast');el.textContent=t;el.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>el.hidden=true,3500)}
+function go(s,push=true){if(push&&S.screen!=='login')S.stack.push(S.screen);else if(push)S.stack=[];S.screen=s;S.msg='';render();window.scrollTo(0,0)}
+function sub(e){
+ if(e.status==='available')return'Ready to use';
+ if(e.status==='inuse')return`${fmt(e.rem)} left · ${e.queue.length} waiting`;
+ if(e.status==='reserved')return`Held for next person · ${e.queue.length} waiting`;
+ return'Out of service'}
+function tile(e){return`<button class="tile s-${e.status}" data-a="open" data-id="${e.id}"><b>${e.name}</b><span class="pill s-${e.status}">${LABEL[e.status]}</span><span class="sub">${sub(e)}</span></button>`}
+function mins(){return`<div class="mins" role="group" aria-label="Session time">${[8,12,15].map(m=>`<button class="chip" data-a="mins" data-m="${m}" aria-pressed="${S.mins===m}">${m} min</button>`).join('')}</div>`}
+const using=()=>E.find(e=>e.status==='inuse'&&e.by==='You');
+const busyMsg=()=>'You are already using '+using().name+'. Finish that session before starting another.';
+function banner(){const u=using();return u&&S.screen!=='login'?`<div class="card now"><b>You are using ${u.name}</b><span class="sub"> · ${fmt(u.rem)} left</span><br><button class="link" data-a="finish" data-id="${u.id}">Finish session</button></div>`:''}
+const V={
+login:()=>{const su=S.mode==='signup';return`<h1>Skip the guessing.<br>Know the wait.</h1><p>${su?'Create an account to join waitlists and track your sessions.':'Log in to see which equipment is free and how long the line is.'}</p>
+<form id="lf" class="card"><h2>${su?'Create account':'Log in'}</h2><label for="em">Email</label><input id="em" type="email" autocomplete="email" value="${(S.email||'').replace(/"/g,'&quot;')}" required><label for="pw">Password</label><input id="pw" type="password" autocomplete="${su?'new-password':'current-password'}" required>${su?'<label for="pw2">Confirm password</label><input id="pw2" type="password" autocomplete="new-password" required>':''}${S.msg?`<p class="${S.ok?'hint':'err'}" role="alert">${S.msg}</p>`:''}<button class="btn" type="submit">${su?'Create account':'Log in'}</button><p style="margin:14px 0 0">${su?'Already have an account?':'New here?'} <button type="button" class="link" data-a="mode">${su?'Log in':'Create an account'}</button></p></form>`},
+find:()=>`
+    <h2>What are you training?</h2>
+
+    <form id="sf" class="card">
+        <label for="q">Search equipment</label>
+
+        <div class="search-wrap">
+            <input
+                id="q"
+                type="search"
+                placeholder="Bench press, treadmill…"
+                autocomplete="off"
+                role="combobox"
+                aria-autocomplete="list"
+                aria-controls="equipment-suggestions"
+                aria-expanded="false"
+            >
+
+            <div
+                id="equipment-suggestions"
+                class="suggestions"
+                role="listbox"
+                hidden>
+            </div>
+        </div>
+
+        <button class="btn" type="submit">Search</button>
+    </form>
+
+    <button class="btn alt" data-a="groups">
+        Browse by muscle group
+    </button>
+`,
+groups:()=>`<h2>Pick a muscle group</h2><div class="chips">${GROUPS.map(g=>`<button class="chip" data-a="group" data-g="${g}" aria-pressed="false">${g}</button>`).join('')}</div>`,
+map:()=>{const l=E.filter(e=>(!S.group||e.g===S.group)&&(!S.q||e.name.toLowerCase().includes(S.q)));
+ const alt=S.group?'':'';return`<h2>${S.group||(S.q?'Results for “'+S.q+'”':'All equipment')}</h2><p class="hint">Tap a machine to see its wait. You are on ${mine().length} of ${MAXLISTS} waitlists.</p>
+ ${l.length?`<div class="floor">${l.map(tile).join('')}</div>`:'<p>No equipment matches. Try another search or muscle group.</p>'}
+ ${mine().length?'<button class="btn alt" data-a="mylists">View my waitlists</button>':''}`},
+detail:()=>{const e=get(S.sel),pos=e.queue.indexOf('You')+1;let act='';
+ if(e.status==='available')act=`<p>Choose your session length, then start.</p>${mins()}<button class="btn" data-a="start">Start using</button>`;
+ else if(e.by==='You')act=`<p>You are using this machine right now, so you can't join its waitlist.</p><button class="btn alt" data-a="finish" data-id="${e.id}">Finish session</button>`;
+ else if(pos)act=`<p>You are number ${pos} in line.</p><button class="btn" data-a="mylists">See my waitlist</button>`;
+ else act=`<button class="btn" data-a="join">Join waitlist</button>`;
+ const alts=e.status!=='available'?E.filter(x=>x.g===e.g&&x.status==='available'&&x.id!==e.id):[];
+ return`<h2>${e.name}</h2><span class="pill s-${e.status}">${LABEL[e.status]}</span>
+ <div class="stats"><div class="stat"><b>${e.status==='unavailable'?'–':e.status==='available'?'0 min':'~'+wait(e)+' min'}</b>Estimated wait</div><div class="stat"><b>${e.queue.length}</b>Waiting</div></div>
+ ${e.status==='inuse'?`<p>Session ends in ${fmt(e.rem)}.</p>`:''}${e.status==='unavailable'?'<p>This equipment is out of service, so you cannot join its waitlist.</p>':''}
+ ${act}${S.msg?`<p class="err" role="alert">${S.msg}</p>`:''}
+ ${alts.length?`<h3 style="margin-top:22px">Free right now, same muscle group</h3><div class="floor">${alts.map(tile).join('')}</div>`:''}`},
+mylists:()=>{const l=mine();return`<h2>My waitlists</h2>${l.length?l.map(e=>`<div class="card"><h3>${e.name}</h3><div class="stats"><div class="stat"><b>#${e.queue.indexOf('You')+1}</b>Your position</div><div class="stat"><b>~${wait(e)-(e.queue.length-1-e.queue.indexOf('You'))*AVG/60|0} min</b>Estimated wait</div></div><p class="hint">${e.status==='reserved'?'Held for the next person in line.':fmt(e.rem||0)+' left on the current session.'}</p><button class="btn danger" data-a="cancel" data-id="${e.id}">Cancel my spot</button></div>`).join(''):'<p>You are not on any waitlist. Find equipment to join one.</p>'}<button class="btn alt" data-a="find">Find more equipment</button>`},
+claim:()=>{const e=get(S.claim);return`<div class="card claim-card"><h2>${e.name} is ready</h2><p>Claim it before the timer runs out, or the next person gets it.</p><div class="big" aria-live="off">${fmt(e.claimLeft)}</div><p>How long will you use it?</p>${mins()}${S.msg?`<p class="err" role="alert">${S.msg}</p>`:''}<button class="btn" data-a="claim">Claim equipment</button><button class="btn danger" data-a="cancel" data-id="${e.id}">Give up my spot</button></div>`}};
+function banner(){const u=using();return u&&S.screen!=='login'?`<div class="card now"><b>You are using ${u.name}</b><span class="sub"> · ${fmt(u.rem)} left</span><br><button class="link" data-a="finish" data-id="${u.id}">Finish session</button></div>`:''}
+
+function derive(){const t=vnow();
+ E=RAW.eq.map(q=>{const rows=RAW.wl.filter(w=>w.equipment_id===q.equipment_id).sort((a,b)=>a.position-b.position);
+  const s=RAW.se.find(x=>x.equipment_id===q.equipment_id&&(!x.end_time||Date.parse(x.end_time)>t));
+  const e={id:q.equipment_id,name:q.name,g:q.muscle_group,rows,sess:s,queue:rows.map(w=>w.user_id===S.me?'You':'Other')};
+  if(q.status==='unavailable')e.status='unavailable';
+  else if(s){e.status='inuse';e.rem=s.duration_minutes*60-(t-Date.parse(s.start_time))/1000;e.by=s.user_id===S.me?'You':null}
+  else if(rows.length){e.status='reserved';e.claimLeft=rows[0].notified_at?CLAIM-(t-Date.parse(rows[0].notified_at))/1000:CLAIM}
+  else e.status='available';
+  return e})}
+async function load(){
+ const [a,b,c]=await Promise.all([db.from('equipment').select('*').order('equipment_id'),db.from('waitlist').select('*').order('position'),db.from('equipment_session').select('*')]);
+ const err=a.error||b.error||c.error;if(err){toast('Database error: '+err.message);return false}
+ RAW={eq:a.data,wl:b.data,se:c.data};return true}
+async function compact(eid){
+ const {data}=await db.from('waitlist').select('waitlist_id,position').eq('equipment_id',eid).order('position');
+ await Promise.all((data||[]).map((r,i)=>r.position===i+1?null:db.from('waitlist').update({position:i+1,notified_at:null}).eq('waitlist_id',r.waitlist_id)))}
+async function maintain(){
+ if(busy)return;busy=true;let ch=false;
+ try{for(const e of E){
+  if(e.sess&&e.rem<=0){
+   await db.from('equipment_session').update({end_time:iso(Date.parse(e.sess.start_time)+e.sess.duration_minutes*60000)}).eq('session_id',e.sess.session_id);
+   if(e.by==='You')toast('Your session on '+e.name+' has ended.');ch=true}
+  else if(!e.sess&&e.status==='reserved'){const f=e.rows[0];
+   if(!f.notified_at){await db.from('waitlist').update({notified_at:iso(vnow())}).eq('waitlist_id',f.waitlist_id);ch=true}
+   else if(e.claimLeft<=0){await db.from('waitlist').delete().eq('waitlist_id',f.waitlist_id);await compact(e.id);
+    if(f.user_id===S.me)toast('Time ran out. Your spot on '+e.name+' was removed.');ch=true}}}
+  if(ch){await load();derive()}}
+ finally{busy=false}}
+async function sync(){if(!S.me)return;if(await load()){derive();await maintain()}view()}
+function view(){
+ const turn=E.find(e=>e.status==='reserved'&&e.queue[0]==='You');
+ if(turn&&S.screen!=='claim'&&S.screen!=='login'){S.claim=turn.id;S.stack=[];S.screen='claim';toast(turn.name+' is ready. Claim it now.')}
+ else if(!turn&&S.screen==='claim'){S.claim=null;S.screen='map';S.stack=['find'];S.msg=''}
+ if(!['find','groups','login'].includes(S.screen)){const y=window.scrollY;render();window.scrollTo(0,y)}}
+const fkey=el=>el?[el.id,el.dataset.a,el.dataset.id,el.dataset.m,el.dataset.g].join('|'):'';
+function render(){
+ const f=document.activeElement,inApp=f&&app.contains(f),k=inApp?fkey(f):'';
+ const twins=()=>[...app.querySelectorAll(f.tagName)].filter(x=>fkey(x)===k);
+ const n=inApp?twins().indexOf(f):-1,pos=inApp?[...app.querySelectorAll(f.tagName)].indexOf(f):-1;
+ app.innerHTML=banner()+V[S.screen]();
+ if(inApp&&k!=='||||'){const m=twins();const t=m[n]||m[0]||[...app.querySelectorAll(f.tagName)][pos];if(t)t.focus({preventScroll:true})}
+ $('#back').hidden = !S.stack.length || S.screen === 'claim';
+
+$('#menu-toggle').hidden = S.screen === 'login';
+
+if (S.screen === 'login') {
+    $('#spot-menu').hidden = true;
+    $('#menu-toggle').setAttribute('aria-expanded', 'false');
 }
 
-.spot-menu {
-    position: absolute;
-    right: 0;
-    top: calc(100% + 12px);
-    width: min(290px, calc(100vw - 24px));
-    padding: 12px;
-    background: var(--card);
-    color: var(--ink);
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    box-shadow: 0 12px 30px rgba(0,0,0,.18);
-    z-index: 30;
+$('#menu-name').textContent = S.name || 'My Account';
+$('#menu-avatar').textContent =
+    (S.name || '?').charAt(0).toUpperCase();
 }
 
-.bar .spot-menu button {
-    display: block;
-    width: 100%;
-    text-align: left;
-    color: var(--ink);
-    border: 0;
-    border-radius: 8px;
-    padding: 10px 12px;
-    white-space: normal;
+async function enter(id){
+ try{localStorage.setItem('spotUser',String(id))}catch(x){}
+ await db.from('users').update({checked_in:true}).eq('user_id',id);
+  await db.rpc('close_stale_check_ins');
+ const openRow=await db.from('check_ins').select('check_in_id').eq('user_id',id).is('checked_out_at',null).limit(1);
+ if(!openRow.data||!openRow.data.length)await db.from('check_ins').insert({user_id:id});
+ const u=await db.from('users').select('email').eq('user_id',id).maybeSingle();S.name=u.data&&u.data.email?u.data.email.split('@')[0]:'';
+ S.me=id;S.checked=true;S.msg='';S.email='';await load();derive();S.screen='find';S.stack=[];render()}
+document.addEventListener('keydown',ev=>{if(ev.key==='Escape')$('#modal').hidden=true});
+document.addEventListener('submit',async ev=>{ev.preventDefault();
+ if(ev.target.id==='lf'){const em=$('#em').value.trim(),pw=$('#pw').value,su=S.mode==='signup';S.email=em;S.ok=false;
+  if(su&&pw!==$('#pw2').value){S.msg='Passwords do not match.';return render()}
+  let id;
+  if(su){const r=await db.from('users').insert({email:em,password:pw}).select('user_id').single();
+   if(r.error){S.msg=r.error.code==='23505'?'That email already has an account.':r.error.message;return render()}
+   id=r.data.user_id}
+  else{const r=await db.from('users').select('user_id').eq('email',em).eq('password',pw).maybeSingle();
+   if(r.error){S.msg=r.error.message;return render()}
+   if(!r.data){S.msg='We could not log you in. Check your email and password, then try again.';return render()}
+   id=r.data.user_id}
+  await enter(id)}
+ if(ev.target.id==='sf'){S.q=$('#q').value.trim().toLowerCase();S.group=null;go('map')}});
+// ---- Equipment search autocomplete ----
+
+let suggestionIndex = -1;
+
+function getEquipmentSuggestions(query) {
+    const q = query.trim().toLowerCase();
+
+    if (!q) return [];
+
+    const names = [...new Set(E.map(e => e.name).filter(Boolean))];
+
+    return names
+        .filter(name => name.toLowerCase().includes(q))
+        .sort((a, b) => {
+            const aName = a.toLowerCase();
+            const bName = b.toLowerCase();
+
+            // Names starting with the search appear first
+            const aStarts = aName.startsWith(q);
+            const bStarts = bName.startsWith(q);
+
+            if (aStarts !== bStarts) {
+                return aStarts ? -1 : 1;
+            }
+
+            return a.localeCompare(b);
+        })
+        .slice(0, 5);
 }
 
-.bar .spot-menu button:hover {
-    background: var(--bg);
+function updateEquipmentSuggestions() {
+    const input = $('#q');
+    const box = $('#equipment-suggestions');
+
+    if (!input || !box) return;
+
+    const matches = getEquipmentSuggestions(input.value);
+    suggestionIndex = -1;
+
+    box.replaceChildren();
+
+    matches.forEach((name, index) => {
+        const option = document.createElement('button');
+
+        option.type = 'button';
+        option.className = 'suggestion';
+        option.id = `equipment-suggestion-${index}`;
+        option.setAttribute('role', 'option');
+        option.setAttribute('aria-selected', 'false');
+        option.textContent = name;
+
+        option.addEventListener('click', () => {
+            input.value = name;
+            box.hidden = true;
+            input.setAttribute('aria-expanded', 'false');
+
+            S.q = name.toLowerCase();
+            S.group = null;
+
+            go('map');
+        });
+
+        box.appendChild(option);
+    });
+
+    box.hidden = matches.length === 0;
+    input.setAttribute('aria-expanded', String(matches.length > 0));
+    input.removeAttribute('aria-activedescendant');
 }
 
-.menu-user {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 8px 14px;
-    border-bottom: 1px solid var(--line);
-    margin-bottom: 8px;
+document.addEventListener('input', ev => {
+    if (ev.target.id === 'q') {
+        updateEquipmentSuggestions();
+    }
+});
+
+document.addEventListener('keydown', ev => {
+    if (ev.target.id !== 'q') return;
+
+    const box = $('#equipment-suggestions');
+
+    if (!box || box.hidden) return;
+
+    const options = [...box.querySelectorAll('.suggestion')];
+
+    if (!options.length) return;
+
+    if (ev.key === 'ArrowDown') {
+        ev.preventDefault();
+        suggestionIndex = (suggestionIndex + 1) % options.length;
+    } else if (ev.key === 'ArrowUp') {
+        ev.preventDefault();
+        suggestionIndex =
+            (suggestionIndex - 1 + options.length) % options.length;
+    } else if (ev.key === 'Enter' && suggestionIndex >= 0) {
+        ev.preventDefault();
+        options[suggestionIndex].click();
+        return;
+    } else if (ev.key === 'Escape') {
+        box.hidden = true;
+        ev.target.setAttribute('aria-expanded', 'false');
+        return;
+    } else {
+        return;
+    }
+
+    options.forEach((option, index) => {
+        const active = index === suggestionIndex;
+
+        option.classList.toggle('active', active);
+        option.setAttribute('aria-selected', String(active));
+
+        if (active) {
+            ev.target.setAttribute('aria-activedescendant', option.id);
+        }
+    });
+});
+
+document.addEventListener('click', ev => {
+    if (!ev.target.closest('.search-wrap')) {
+        const box = $('#equipment-suggestions');
+        if (box) box.hidden = true;
+    }
+});
+ const myRow=e=>e.rows.find(w=>w.user_id===S.me);
+document.addEventListener('click',async ev=>{const b=ev.target.closest('button');if(!b)return;
+  if (b.id === 'menu-toggle') {
+    const menu = $('#spot-menu');
+    menu.hidden = !menu.hidden;
+
+    b.setAttribute('aria-expanded', String(!menu.hidden));
+    return;
 }
 
-.menu-avatar {
-    display: grid;
-    place-items: center;
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    background: var(--brand);
-    color: var(--on-brand);
-    font-weight: 700;
+if (b.closest('#spot-menu')) {
+    $('#spot-menu').hidden = true;
+    $('#menu-toggle').setAttribute('aria-expanded', 'false');
 }
 
-.spot-menu hr {
-    border: 0;
-    border-top: 1px solid var(--line);
-    margin: 8px 0;
+if (b.id === 'profile-open') {
+    toast('Profile settings are coming next.');
+    return;
 }
+                                             // Toggle between light and dark mode
+if (b.id === "theme-toggle") {
+    currentTheme = currentTheme === "light" ? "dark" : "light";
 
-.bar .spot-menu .menu-danger {
-    color: var(--err);
-    font-weight: 700;
+    applyTheme();
+
+    try {
+        localStorage.setItem("spotTheme", currentTheme);
+    } catch (error) {
+        console.log("Theme preference could not be saved.");
+    }
+
+    return;
 }
-
-.bar .spot-menu .menu-danger:hover {
-    background: color-mix(in srgb, var(--err) 10%, transparent);
+ if(b.id==='back'){S.screen=S.stack.pop();S.msg='';return render()}
+ if(b.id==='checkin'){$('#modal').hidden=false;$('#co-no').focus();return}
+ if(b.id==='co-no'){$('#modal').hidden=true;return}
+ if(b.id==='co-yes'){$('#modal').hidden=true;
+  for(const x of E){const r=myRow(x);if(r){await db.from('waitlist').delete().eq('waitlist_id',r.waitlist_id);await compact(x.id)}}
+  const u=using();if(u)await db.from('equipment_session').update({end_time:iso(vnow())}).eq('session_id',u.sess.session_id);
+  await db.from('users').update({checked_in:false}).eq('user_id',S.me);
+  await db.from('check_ins').update({checked_out_at:new Date().toISOString()}).eq('user_id',S.me).is('checked_out_at',null);
+  try{localStorage.removeItem('spotUser')}catch(x){}
+  S.me=null;S.name='';S.claim=null;S.screen='login';S.stack=[];S.group=null;S.q='';E=[];toast('You have been checked out.');render();return}
+ if (b.id === 'speed') {
+    S.speed = S.speed === 1 ? 30 : 1;
+    b.setAttribute('aria-pressed', String(S.speed > 1));
+    b.textContent = S.speed > 1 ? '30x Time: On' : '30x Time: Off';
+    return;
 }
-
-/* Equipment search autocomplete */
-
-.search-wrap {
-    position: relative;
-}
-
-.suggestions {
-    position: absolute;
-    top: calc(100% + 4px);
-    left: 0;
-    right: 0;
-    z-index: 10;
-    background: var(--card);
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, .12);
-    overflow: hidden;
-}
-
-.suggestion {
-    display: block;
-    width: 100%;
-    padding: 12px;
-    border: 0;
-    border-bottom: 1px solid var(--line);
-    background: var(--card);
-    color: var(--ink);
-    font: inherit;
-    text-align: left;
-    cursor: pointer;
-}
-
-.suggestion:last-child {
-    border-bottom: 0;
-}
-
-.suggestion:hover,
-.suggestion.active {
-    background: var(--bg);
-}
+ const a=b.dataset.a,e=b.dataset.id&&get(+b.dataset.id);if(!a)return;
+ if(a==='mode'){S.mode=S.mode==='login'?'signup':'login';S.msg='';S.ok=false;return render()}
+ if(a==='groups')go('groups');
+ if(a==='group'){S.group=b.dataset.g;S.q='';go('map')}
+ if(a==='open'){S.sel=e.id;go('detail')}
+ if(a==='mins'){S.mins=+b.dataset.m;render()}
+ if(a==='find'){S.stack=[];S.q='';S.group=null;go('find',false)}
+ if(a==='mylists')go('mylists');
+ if(a==='start'){
+  if(using())S.msg=busyMsg();
+  else{const {error}=await db.from('equipment_session').insert({user_id:S.me,equipment_id:S.sel,duration_minutes:S.mins,start_time:iso(vnow())});
+   if(error)S.msg=error.code==='23505'?'Someone just started on this machine, or you already have a session open.':error.message;
+   else toast('Enjoy your set. Your session timer has started.')}
+  await sync();render()}
+ if(a==='finish'){await db.from('equipment_session').update({end_time:iso(vnow())}).eq('session_id',e.sess.session_id);toast('Session finished.');await sync();render()}
+ if(a==='join'){const x=get(S.sel);
+  if(x.by==='You')S.msg='You are using this machine right now, so you cannot join its waitlist.';
+  else if(!S.checked)S.msg='You need to check in at the gym before you can join a waitlist.';
+  else if(x.status==='unavailable')S.msg='This equipment is currently unavailable, so you cannot join its waitlist.';
+  else if(mine().length>=MAXLISTS)S.msg='You are on 3 waitlists already. Cancel one to join another.';
+  else{const {error}=await db.from('waitlist').insert({user_id:S.me,equipment_id:x.id,position:x.rows.length+1});
+   if(error)S.msg=error.code==='23505'?'You are already on this waitlist.':error.message;
+   else{await sync();return go('mylists')}}
+  render()}
+ if(a==='cancel'){const r=myRow(e);if(r){await db.from('waitlist').delete().eq('waitlist_id',r.waitlist_id);await compact(e.id)}
+  toast('Removed from the '+e.name+' waitlist.');if(S.screen==='claim'){S.screen='map';S.stack=['find'];S.claim=null}await sync();render()}
+ if(a==='claim'){
+  if(using()){S.msg=busyMsg();return render()}
+  const c=get(S.claim),r=c.rows[0];
+  const {error}=await db.from('equipment_session').insert({user_id:S.me,equipment_id:c.id,duration_minutes:S.mins,start_time:iso(vnow())});
+  if(error){S.msg=error.code==='23505'?'Someone else started on this machine first.':error.message;return render()}
+  await db.from('waitlist').delete().eq('waitlist_id',r.waitlist_id);await compact(c.id);
+  S.claim=null;S.sel=c.id;S.stack=['find','map'];S.screen='detail';S.msg='';toast('It is yours. Your session timer has started.');await sync();render()}});
+  document.addEventListener('click', ev => {
+    if (!ev.target.closest('.menu-wrap')) {
+        $('#spot-menu').hidden = true;
+        $('#menu-toggle').setAttribute('aria-expanded', 'false');
+    }
+});
+setInterval(()=>{if(!S.me)return;S.warp+=(S.speed-1)*1000;try{localStorage.setItem('spotWarp',S.warp)}catch(x){}derive();view()},1000);
+setInterval(()=>{if(S.me)sync()},4000);
+setInterval(()=>{if(S.me)db.rpc('heartbeat',{p_user:S.me})},20000);
+// ---- Auto log out after inactivity ----
+const IDLE_MS=30*60*1000;   // 30 minutes; change as needed
+let lastTouch=Date.now(),lastSave=0;
+['click','keydown','touchstart','mousemove','scroll'].forEach(ev=>document.addEventListener(ev,()=>{
+ lastTouch=Date.now();
+ if(lastTouch-lastSave>10000){lastSave=lastTouch;try{localStorage.setItem('spotSeen',String(lastTouch))}catch(x){}}
+},{passive:true}));
+setInterval(async()=>{
+ if(!S.me||Date.now()-lastTouch<IDLE_MS||using()||mine().length)return;
+ const id=S.me;S.me=null;
+ await db.from('users').update({checked_in:false}).eq('user_id',id);
+ await db.from('check_ins').update({checked_out_at:new Date().toISOString()}).eq('user_id',id).is('checked_out_at',null);
+ try{localStorage.removeItem('spotUser')}catch(x){}
+ S.name='';S.claim=null;S.screen='login';S.stack=[];S.group=null;S.q='';E=[];S.ok=true;
+ S.msg='You were logged out after '+Math.round(IDLE_MS/60000)+' minutes of inactivity. Log in to continue.';
+ render();
+},30000);
+render();
+(async()=>{let saved=null;try{saved=localStorage.getItem('spotUser')}catch(x){}
+ if(!saved)return;
+  let seen=0;try{seen=+localStorage.getItem('spotSeen')||0}catch(x){}
+ if(seen&&Date.now()-seen>IDLE_MS){try{localStorage.removeItem('spotUser')}catch(x){}return}
+ const {data,error}=await db.from('users').select('user_id').eq('user_id',saved).maybeSingle();
+ if(error)console.error('Could not restore login:',error.message);
+ else if(data)enter(data.user_id);
+ else try{localStorage.removeItem('spotUser')}catch(x){}})();
