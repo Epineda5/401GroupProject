@@ -10,3 +10,4 @@ Vertical Slice: Sign in with
 username: chris@example.com
 password: gym123
 and search for a treadmill. Sign up for 8-15 minutes and let the timer run out.
+...
