@@ -127,6 +127,9 @@ function render(){
 async function enter(id){
  try{localStorage.setItem('spotUser',String(id))}catch(x){}
  await db.from('users').update({checked_in:true}).eq('user_id',id);
+  await db.rpc('close_stale_check_ins');
+ const openRow=await db.from('check_ins').select('check_in_id').eq('user_id',id).is('checked_out_at',null).limit(1);
+ if(!openRow.data||!openRow.data.length)await db.from('check_ins').insert({user_id:id});
  const u=await db.from('users').select('email').eq('user_id',id).maybeSingle();S.name=u.data&&u.data.email?u.data.email.split('@')[0]:'';
  S.me=id;S.checked=true;S.msg='';S.email='';await load();derive();S.screen='find';S.stack=[];render()}
 document.addEventListener('keydown',ev=>{if(ev.key==='Escape')$('#modal').hidden=true});
@@ -166,6 +169,7 @@ if (b.id === "theme-toggle") {
   for(const x of E){const r=myRow(x);if(r){await db.from('waitlist').delete().eq('waitlist_id',r.waitlist_id);await compact(x.id)}}
   const u=using();if(u)await db.from('equipment_session').update({end_time:iso(vnow())}).eq('session_id',u.sess.session_id);
   await db.from('users').update({checked_in:false}).eq('user_id',S.me);
+  await db.from('check_ins').update({checked_out_at:new Date().toISOString()}).eq('user_id',S.me).is('checked_out_at',null);
   try{localStorage.removeItem('spotUser')}catch(x){}
   S.me=null;S.name='';S.claim=null;S.screen='login';S.stack=[];S.group=null;S.q='';E=[];toast('You have been checked out.');render();return}
  if(b.id==='speed'){S.speed=S.speed===1?30:1;b.setAttribute('aria-pressed',S.speed>1);return}
@@ -204,9 +208,29 @@ if (b.id === "theme-toggle") {
   S.claim=null;S.sel=c.id;S.stack=['find','map'];S.screen='detail';S.msg='';toast('It is yours. Your session timer has started.');await sync();render()}});
 setInterval(()=>{if(!S.me)return;S.warp+=(S.speed-1)*1000;try{localStorage.setItem('spotWarp',S.warp)}catch(x){}derive();view()},1000);
 setInterval(()=>{if(S.me)sync()},4000);
+setInterval(()=>{if(S.me)db.rpc('heartbeat',{p_user:S.me})},20000);
+// ---- Auto log out after inactivity ----
+const IDLE_MS=30*60*1000;   // 30 minutes; change as needed
+let lastTouch=Date.now(),lastSave=0;
+['click','keydown','touchstart','mousemove','scroll'].forEach(ev=>document.addEventListener(ev,()=>{
+ lastTouch=Date.now();
+ if(lastTouch-lastSave>10000){lastSave=lastTouch;try{localStorage.setItem('spotSeen',String(lastTouch))}catch(x){}}
+},{passive:true}));
+setInterval(async()=>{
+ if(!S.me||Date.now()-lastTouch<IDLE_MS||using()||mine().length)return;
+ const id=S.me;S.me=null;
+ await db.from('users').update({checked_in:false}).eq('user_id',id);
+ await db.from('check_ins').update({checked_out_at:new Date().toISOString()}).eq('user_id',id).is('checked_out_at',null);
+ try{localStorage.removeItem('spotUser')}catch(x){}
+ S.name='';S.claim=null;S.screen='login';S.stack=[];S.group=null;S.q='';E=[];S.ok=true;
+ S.msg='You were logged out after '+Math.round(IDLE_MS/60000)+' minutes of inactivity. Log in to continue.';
+ render();
+},30000);
 render();
 (async()=>{let saved=null;try{saved=localStorage.getItem('spotUser')}catch(x){}
  if(!saved)return;
+  let seen=0;try{seen=+localStorage.getItem('spotSeen')||0}catch(x){}
+ if(seen&&Date.now()-seen>IDLE_MS){try{localStorage.removeItem('spotUser')}catch(x){}return}
  const {data,error}=await db.from('users').select('user_id').eq('user_id',saved).maybeSingle();
  if(error)console.error('Could not restore login:',error.message);
  else if(data)enter(data.user_id);
